@@ -13,7 +13,7 @@ pipeline {
         AWS_ACCOUNT_ID = "900896541168"
         ECR_REPO = "900896541168.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo"
         K8S_DEPLOYMENT_NAME = "springboot-demo"
-        CLUSTER_NAME = "production-cluster"
+        CLUSTER_NAME = "prodution-cluster"
        
     }
 

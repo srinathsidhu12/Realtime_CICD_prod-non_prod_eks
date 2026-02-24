@@ -6,7 +6,7 @@ pipeline {
         ECR_REPO = "900896541168.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo"
         IMAGE_TAG = "${BUILD_NUMBER}"
         K8S_DEPLOYMENT_NAME = "springboot-demo"
-        EKS_CLUSTER = "Non_prodution_cluster"
+        EKS_CLUSTER = "non_prodution_cluster"
     }
     tools {
        jdk 'JDK-21'
@@ -55,7 +55,7 @@ pipeline {
 
     post {
         success {
-            echo " Non-prod deployment successful: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+            echo " Non-prod deployment successful: ${ECR_REPO}:${IMAGE_TAG}"
         }
         failure {
             echo "Non-prod Deployment failed!"

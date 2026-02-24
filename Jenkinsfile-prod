@@ -8,7 +8,7 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = "ap-south-1
+        AWS_REGION = "ap-south-1"
         AWS_ACCOUNT_ID = "900896541168"
         ECR_REPO = "900896541168.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo"
         K8S_DEPLOYMENT_NAME = "springboot-demo"
@@ -51,7 +51,6 @@ pipeline {
             }
          }
        }
-    }
     post {
         success {
             echo "Production deployment completed successfully."

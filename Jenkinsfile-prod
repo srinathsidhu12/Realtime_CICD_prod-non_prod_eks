@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    parameters {
+        string(
+            name: 'IMAGE_TAG',
+            description: 'Enter finalized Docker image tag (already validated in non-prod)'
+        )
+    }
+
+    environment {
+        AWS_REGION = "ap-south-1
+        AWS_ACCOUNT_ID = "900896541168"
+        ECR_REPO = "900896541168.dkr.ecr.ap-south-1.amazonaws.com/springboot-demo"
+        K8S_DEPLOYMENT_NAME = "springboot-demo"
+        CLUSTER_NAME = "production-cluster"
+       
+    }
+
+    stages {
+
+        stage('Checkout Prod Manifests') {
+            steps {
+                git 'https://github.com/srinathsidhu12/Realtime_CICD_prod-non_prod.git'	
+            }
+        }
+
+        stage('Validate Docker Image Tag') {
+            steps {
+                 sh """
+                  aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                  docker pull ${ECR_REPO}:${IMAGE_TAG}
+                 """
+            }
+         }
+        stage('Manual Approval') {
+            agent none
+            steps {
+                input message: "Approve deployment of image ${IMAGE_TAG} to PRODUCTION?"
+            }
+        }
+
+        stage('Update Kubernetes Manifest and Deploy to Production Cluster') {
+            steps {
+                sh """
+                  aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
+                  sed -i 's|image:.*|image: ${ECR_REPO}:${IMAGE_TAG} |'  ./k8s/prod/k8s-deployment.yaml
+                  kubectl apply -f ./k8s/prod/k8s-deployment.yaml
+                  kubectl apply -f ./k8s/prod/k8s-service.yaml
+                  kubectl rollout status deployment/${K8S_DEPLOYMENT_NAME}
+                """
+            }
+         }
+       }
+    }
+    post {
+        success {
+            echo "Production deployment completed successfully."
+        }
+        failure {
+            echo "Production deployment failed."
+        }
+    }
+}
+

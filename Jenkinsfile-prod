@@ -1,8 +1,9 @@
 pipeline {
-    agent any
+    agent {label 'agent_1
     parameters {
         string(
             name: 'IMAGE_TAG',
+            defaultValue: '',
             description: 'Enter finalized Docker image tag (already validated in non-prod)'
         )
     }
